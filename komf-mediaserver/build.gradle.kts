@@ -1,23 +1,16 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.kotlinAtomicfu)
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.sqldelight)
 }
 
 group = "io.github.snd-r"
 version = libs.versions.app.version.get()
 
 kotlin {
-    jvmToolchain(17)
     jvm {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
-        }
+        compilerOptions { jvmTarget.set(JvmTarget.JVM_17) }
     }
 
     sourceSets {
@@ -27,6 +20,8 @@ kotlin {
         commonMain.dependencies {
             implementation(project(":komf-core"))
             implementation(project(":komf-notifications"))
+            implementation(libs.flyway.core)
+            implementation(libs.hikari.cp)
             implementation(libs.kotlin.logging)
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
@@ -41,7 +36,8 @@ kotlin {
             implementation(libs.xmlutil.serialization)
             implementation(libs.jose4j)
             implementation(libs.signalr)
-            implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.exposed.jdbc)
+            implementation(libs.exposed.json)
             implementation(libs.sqlite.jdbc)
             api(libs.komga.client)
 
@@ -50,10 +46,3 @@ kotlin {
 
 }
 
-sqldelight {
-    databases {
-        create("Database") {
-            packageName.set("snd.komf.mediaserver.repository")
-        }
-    }
-}
